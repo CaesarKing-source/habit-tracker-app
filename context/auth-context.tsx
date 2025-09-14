@@ -17,7 +17,7 @@ export const AuthContextProvider = ({ children } : {children : ReactNode}) => {
     const [isLoadingUser, setIsLoadingUser] = useState(true);
     useEffect(() => {
         getUser()
-    }, [user]);
+    }, []);
     
     const getUser = async () => {
         try {
@@ -65,7 +65,7 @@ export const AuthContextProvider = ({ children } : {children : ReactNode}) => {
             setUser(null);
         }
         catch(err) {
-            console.log(err.message)
+            console.log(err)
         }
     }
 

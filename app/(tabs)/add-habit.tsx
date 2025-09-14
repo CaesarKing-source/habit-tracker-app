@@ -32,7 +32,7 @@ const AddHabit = () => {
           last_completed: new Date().toISOString(),
         }
       );
-      router.back()
+      router.back();
     } 
     catch (err) {
       if (err instanceof Error) {
@@ -52,9 +52,10 @@ const AddHabit = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.title} variant='headlineMedium'>Add Habit</Text>
-      <TextInput style={styles.input} label={'Habit'} placeholder='Enter habit' mode='outlined' onChangeText={setHabit} />
+      <TextInput style={styles.input} label={'Habit'} placeholder='Enter habit' mode='outlined' 
+      value={habit} onChangeText={setHabit} />
       <TextInput style={styles.input} label={'Description'} placeholder='Enter description' 
-      onChangeText={setDesc} mode='outlined' />
+      value={desc} onChangeText={setDesc} mode='outlined' />
 
       <View style={styles.secondaryBtn}>
         <SegmentedButtons value={freq} onValueChange={(value) => setFreq(value as FrequencyType)} 
@@ -80,10 +81,10 @@ const styles = StyleSheet.create({
       padding: 15
   },
   title: {
-      textAlign: 'center',
-      marginBottom: 25,
-      fontWeight: 700,
-      color: '#003b95'
+    fontSize: 35,
+    marginBottom: 25,
+    fontWeight: 700,
+    color: '#003b95'
   },
   input: {
       marginBottom: 15,
@@ -92,7 +93,6 @@ const styles = StyleSheet.create({
   button: {
       marginTop: 20,
       backgroundColor: '#003b95',
-      borderRadius: 6,
       paddingVertical: 5,
   },
   secondaryBtn : {
@@ -101,7 +101,6 @@ const styles = StyleSheet.create({
   },
   disabledButton: {
     backgroundColor: '#cccccc',
-    borderRadius: 6,
   },
   disabledButtonText: {
     color: '#666666',
