@@ -60,13 +60,13 @@ export default function Index() {
 
   const renderLeft = () => (
     <View style={styles.swipeActionLeft}>
-      <MaterialCommunityIcons name="trash-can-outline" size={25} color="#fff" />
+      <MaterialCommunityIcons name="trash-can-outline" size={30} color="#fff" />
     </View>
   )
 
   const renderRight = () => (
     <View style={styles.swipeActionRight}>
-      <MaterialIcons name="check-circle-outline" size={25} color={'#fff'} />
+      <MaterialIcons name="check-circle-outline" size={30} color={'#fff'} />
     </View>
   )
 
