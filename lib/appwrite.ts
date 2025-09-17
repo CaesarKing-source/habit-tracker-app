@@ -12,6 +12,7 @@ export const AppwriteID = ID;
 
 export const DATABASE_ID= process.env.EXPO_PUBLIC_DB_ID!;
 export const HABITS_COLLECTION_ID=process.env.EXPO_PUBLIC_HABITS_COLLECTION!;
+export const HABITS_COMPLETION_ID=process.env.EXPO_PUBLIC_HABITS_COMPLETION_COLLECTION!;
 
 export interface RealtimeResponse {
     events: string[],

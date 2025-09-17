@@ -1,21 +1,25 @@
 import HabitCard from "@/components/HabitCard";
 import { useAuth } from "@/context/auth-context";
 import { DATABASE_ID, HABITS_COLLECTION_ID, RealtimeResponse, client, databases } from "@/lib/appwrite";
-import { Habit } from "@/types/database.type";
+import { Habit, HabitCompletion } from "@/types/database.type";
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useEffect, useRef, useState } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
-import { Query } from "react-native-appwrite";
+import { ID, Query } from "react-native-appwrite";
 import { Swipeable } from 'react-native-gesture-handler';
 import { Text } from 'react-native-paper';
+
 
 export default function Index() {
   const { user } = useAuth();
   const userId = user?.$id;
   const [habits, setHabits] = useState<Habit[]>([]);
+  // const [completedHabits, setCompletedHabits] = useState<HabitCompletion[] | undefined>([]);
+  const [completedHabits, setCompletedHabits] = useState<string[]>();
   const [loading, setLoading] = useState<boolean>(false);
   const swipeableRef = useRef<{ [key: string] : Swipeable | null }>({});
+
 
   useEffect(() => {
     if(user?.$id) {
@@ -34,6 +38,7 @@ export default function Index() {
         }
       );
       fetchHabits(userId!);
+      fetchTodayCompletion(userId!);
     }
     return () => {
       console.log('unmounted component')
@@ -55,6 +60,62 @@ export default function Index() {
     }
     finally {
       setLoading(false);
+    }
+  }
+
+  const fetchTodayCompletion = async (id: string) => {
+    try {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const response = await databases.listDocuments(
+        DATABASE_ID, "habits_completion", 
+        [Query.equal('user_id', id ?? ""), 
+        Query.greaterThanEqual('completion_at', today.toISOString())]
+      );
+      const completions = response.documents as unknown as HabitCompletion[];
+      setCompletedHabits(completions.map((c) => c.habit_id));
+    }
+    catch(err) {
+      console.log(err);
+    }
+    finally {
+      setLoading(false);
+    }
+  }
+
+  const handleDelete = async (id: string) => {
+    try {
+      await databases.deleteDocument(DATABASE_ID, HABITS_COLLECTION_ID, id);
+    }
+    catch(err) {
+      console.log(err);
+    }
+  }
+
+  const handleCompletion = async (id: string) => {
+    if(!user || completedHabits?.includes(id)) return;
+    try {
+      const currentDate = new Date().toISOString();
+      await databases.createDocument(DATABASE_ID, 'habits_completion', 
+        ID.unique(), 
+        {
+          habit_id: id,
+          user_id: user?.$id,
+          completion_at: currentDate    
+        }
+      );
+
+      const habit = habits?.find(h => h.$id == id);
+      if(!habit) return;
+      await databases.updateDocument(DATABASE_ID, HABITS_COLLECTION_ID, id, 
+        {
+          streak_count: habit.streak_count + 1,
+          last_completed: currentDate
+        }
+      );
+    }
+    catch(err) {
+      console.log(err);
     }
   }
 
@@ -92,6 +153,15 @@ export default function Index() {
               overshootRight={false}
               renderLeftActions={renderLeft}
               renderRightActions={renderRight}
+              onSwipeableOpen={(direction) => {
+                if(direction == 'left') {
+                  handleDelete(habit.$id);
+                }
+                else if(direction == 'right') {
+                  handleCompletion(habit.$id);
+                }
+                swipeableRef.current[habit.$id]?.close();
+              }}
               >
               <HabitCard key={habit.$id} data={habit} />
             </Swipeable>

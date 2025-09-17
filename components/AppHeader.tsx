@@ -6,7 +6,7 @@ import { Avatar, Text } from 'react-native-paper'
 const AppHeader = () => {
   return (
     <View style={styles.header}>
-        <Text variant="headlineSmall">Habit Tracker</Text>
+        <Text variant="headlineSmall" style={{fontWeight: "bold", color: "#003b95"}}>Habit Tracker</Text>
         <Link href={'/profile'}>
             <Avatar.Icon style={styles.profile} size={45} icon={'account-circle-outline'} color='white' />
         </Link>

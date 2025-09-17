@@ -14,3 +14,9 @@ export interface Habit extends Models.DefaultDocument {
 export type HabitCardProps = {
     data: Habit;
 };
+
+export interface HabitCompletion extends Models.Document {
+    habit_id: string;
+    user_id: string;
+    completed_at: string;
+  }
